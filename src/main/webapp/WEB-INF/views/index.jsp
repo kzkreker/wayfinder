@@ -16,10 +16,11 @@
     <title>WayFinder</title>
 
     <!--CSS-->
-    <link href="<c:url value="/resources/bower_components/bootstrap/dist/css/bootstrap.min.css"/>" rel="stylesheet">
-    <link href="<c:url value="/resources/bower_components/leaflet/dist/leaflet.css"/>" rel="stylesheet">
-    <link href="<c:url value="/resources/bower_components/font-awesome/css/font-awesome.min.css"/>" rel="stylesheet">
-    <link href="<c:url value="/resources/css/app.css"/>" rel="stylesheet">
+    <link href="<c:url value="resources/bower_components/bootstrap/dist/css/bootstrap.min.css"/>" rel="stylesheet">
+    <link href="<c:url value="resources/bower_components/leaflet/dist/leaflet.css"/>" rel="stylesheet">
+    <link href="<c:url value="resources/bower_components/font-awesome/css/font-awesome.min.css"/>" rel="stylesheet">
+    <link href="<c:url value="resources/css/app.css"/>" rel="stylesheet">
+    <link href="<c:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.css"/>" rel="stylesheet" />
 </head>
 
 <body>
@@ -63,7 +64,53 @@
                         <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
                 </div>
                 <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-hover table-striped">
+                                <caption>Статус </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Параметр</th>
+                                        <th>Значение</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Широта</td>
+                                    <td id='latCell'></td>
+                                </tr>
+                                <tr>
+                                    <td>Долгота</td>
+                                    <td  id='lonCell'></td>
+                                </tr>
+                                <tr>
+                                    <td>Скорость</td>
+                                    <td id='groundSpeedCell'></td>
+                                </tr>
+                                <tr>
+                                    <td>Высота</td>
+                                    <td id='altitudeCell'></td>
+                                </tr>
+                                <tr>
+                                    <td>Режим</td>
+                                    <td id='modeCell'></td>
+                                </tr>
 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="margin: 10px">
+
+                        <button type="button" class="btn btn-default">
+                            ff
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            ff
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -86,9 +133,11 @@
     <div id="map"></div>
 </div>
     <!--JS-->
-    <script src="<c:url value="/resources/bower_components/jquery/dist/jquery.min.js"/>"></script>
-    <script src="<c:url value="/resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
-    <script src="<c:url value="/resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
-    <script src="<c:url value="/resources/js/app.js"/>"></script>
+    <script src="<c:url value="resources/bower_components/jquery/dist/jquery.min.js"/>"></script>
+    <script src="<c:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+    <script src="<c:url value="resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
+    <script src="<c:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.js"/>"></script>
+    <script src="<c:url value="resources/js/app.js"/>"></script>
+
 </body>
 </html>

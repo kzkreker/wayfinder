@@ -1,9 +1,10 @@
 package org.wayfinder.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.wayfinder.data.geojson.Feature;
 import org.wayfinder.data.geojson.Point;
 import java.io.IOException;
@@ -13,9 +14,11 @@ import java.util.Map;
 /**
  * Created by kreker on 27.09.14.
  */
-@Controller
+@RestController
+@RequestMapping("/rest/map/points")
 public class MapController {
-    @RequestMapping("/rest/map/points/all")
+
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
     public @ResponseBody
     String getJson() {
         try {

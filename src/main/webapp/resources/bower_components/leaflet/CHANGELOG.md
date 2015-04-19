@@ -300,7 +300,7 @@ Leaflet Changelog
  * Made Leaflet classes compatible with **CoffeeScript class inheritance** syntax (by [@calvinmetcalf](https://github.com/calvinmetcalf)). [#1345](https://github.com/Leaflet/Leaflet/pull/1345) [#1314](https://github.com/Leaflet/Leaflet/issues/1314)
  * Added `cleanAllEventListeners` method (aliased to `off` without arguments) to all events-enabled objects (by [@iirvine](https://github.com/iirvine)). [#1599](https://github.com/Leaflet/Leaflet/issues/1599)
  * Added `addOneTimeEventListener` method (aliased to `once`) to all events-enabled objects (by [@iirvine](https://github.com/iirvine)). [#473](https://github.com/Leaflet/Leaflet/issues/473) [#1596](https://github.com/Leaflet/Leaflet/issues/1596)
- * Added ability to pass coordinates as simple objects (`{lat: 50, lon: 30}` or `{lat: 50, lng: 30}`). [#1412](https://github.com/Leaflet/Leaflet/issues/1412)
+ * Added ability to pass coordinates as simple objects (`{lat: 50, lng: 30}` or `{lat: 50, lng: 30}`). [#1412](https://github.com/Leaflet/Leaflet/issues/1412)
  * Added `LatLngBounds` `getNorth`, `getEast`, `getSouth`, `getWest` methods (by [@yohanboniface](https://github.com/yohanboniface)). [#1318](https://github.com/Leaflet/Leaflet/issues/1318)
  * Added `AMD` support (Leaflet now registers itself as a `leaflet` AMD module) (with fixes from [@sheppard](https://github.com/sheppard)). [#1364](https://github.com/Leaflet/Leaflet/issues/1364) [#1778](https://github.com/Leaflet/Leaflet/issues/1778)
  * Added `L.Util.trim` function (by [@kristerkari](https://github.com/kristerkari)). [#1607](https://github.com/Leaflet/Leaflet/pull/1607)
