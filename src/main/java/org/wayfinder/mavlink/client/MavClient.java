@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by bedash on 19.04.15.
@@ -28,21 +30,38 @@ public class MavClient {
     private static String hostName = "roverSim";
     private static String port = "8080";
 
-    private MavClient(){
+    private DroneLocation location;
+    private Double groundspeed;
+    private String mode;
+
+    private MavClient() {
+
         ClientConfig config = new DefaultClientConfig();
         config.getClasses().add(JacksonJsonProvider.class);
         this.client = new Client(new URLConnectionClientHandler(
-                new HttpURLConnectionFactory() {
-                    Proxy p = null;
-                    @Override
-                    public HttpURLConnection getHttpURLConnection(URL url)
-                            throws IOException {
-                        if (p == null) {
-                            p = Proxy.NO_PROXY;
-                        }
-                        return (HttpURLConnection) url.openConnection(p);
+            new HttpURLConnectionFactory() {
+                Proxy p = null;
+
+                @Override
+                public HttpURLConnection getHttpURLConnection(URL url)
+                        throws IOException {
+                    if (p == null) {
+                        p = Proxy.NO_PROXY;
                     }
-                }), config);
+                    return (HttpURLConnection) url.openConnection(p);
+                }
+            }), config);
+
+        Timer timet = new Timer("InMemoryProjectDalcTimer");
+        timet.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                location = getDataFromUrl("location", DroneLocation.class);
+                groundspeed = getDataFromUrl("groundspeed", Double.class);
+                mode = getDataFromUrl("mode", String.class).replace("\"", "");
+            }
+        }, 0, 1000);
+
     }
 
     private  static  class MavClientHolder{
@@ -54,13 +73,11 @@ public class MavClient {
     }
 
     public DroneStatus getDroneStatus(){
-        DroneLocation location = getDataFromUrl("location", DroneLocation.class);
-        Double groundspeed = getDataFromUrl("groundspeed", Double.class);
-        String mode = getDataFromUrl("mode", String.class).replace("\"","");
         return new DroneStatus(location, groundspeed, mode);
     }
 
     public void goTo(LeafletLatLng leafletLatLng){
+
         Form form = new Form();
         form.add("lat", leafletLatLng.getLat());
         form.add("lon", leafletLatLng.getLng());
