@@ -56,7 +56,7 @@
 </div>
 
 <div id="container">
-    <div id="sidebarManage" class="sidebar">
+    <div id="sidebar-manage" class="sidebar" style="display: none">
         <div class="sidebar-wrapper">
             <div class="panel panel-default features">
                 <div class="panel-heading">
@@ -96,6 +96,11 @@
                                     <td id='modeCell'></td>
                                 </tr>
 
+                                <tr>
+                                    <td>Следующая точка</td>
+                                    <td id='next-сell'></td>
+                                </tr>
+
                                 </tbody>
                             </table>
                         </div>
@@ -103,20 +108,29 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12" style="margin: 10px">
-
                         <button type="button" class="btn btn-default">
-                            ff
+                            Перевисти в Hold
                         </button>
-                        <button type="button" class="btn btn-primary">
-                            ff
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="margin: 10px">
+                        <button type="button" class="btn btn-default">
+                            Перевисти в Auto
                         </button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" style="margin: 10px">
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="sidebar-way" class="sidebar" style="display: none">
+    <div id="sidebar-way" class="sidebar" >
         <div class="sidebar-wrapper">
             <div class="panel panel-default features">
                 <div class="panel-heading">
@@ -124,8 +138,56 @@
                         <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-way-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
                 </div>
                 <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="input-start" class="col-sm-2 control-label">От</label>
+                            <div class="col-sm-10">
+                                <input class="form-control " disabled id="input-start" placeholder="Маршрут отсюда - на карте">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-stop" class="col-sm-2 control-label">До</label>
+                            <div class="col-sm-10">
+                                <input  class="form-control " disabled id="input-stop" placeholder="Маршрут сюда - на карте">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-hight" class="col-sm-2 control-label">Высота</label>
+                            <div class="col-sm-10">
+                                <input  class="form-control " disabled id="input-hight" placeholder="Высота относительно поверхности">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-default">Загрузить</button>
+                                <button type="button" class="btn btn-default">Прыгнуть</button>
+                                <button type="button" class="btn btn-default">Сбросить</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table  id="path-table" class="table table-hover table-striped">
+                                <caption> Точки Пути </caption>
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Широта</th>
+                                    <th>Долгота</th>
+                                </tr>
+                                </thead>
+                                <tbody  id="path-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                 </div>
+
             </div>
         </div>
     </div>

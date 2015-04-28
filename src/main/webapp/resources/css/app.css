@@ -171,3 +171,17 @@ input[type="radio"], input[type="checkbox"] {
         display: none !important;
     }
 }
+
+#path-table{
+    height:300px;
+}
+#path-table-body{
+    overflow-y: scroll;
+    height: 283px;
+    position: absolute;
+}
+
+.path-table-body-tr {
+    width: 100%;
+    display: inline-table;
+}

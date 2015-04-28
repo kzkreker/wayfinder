@@ -31,8 +31,10 @@ public class MavClient {
     private static String port = "8080";
 
     private DroneLocation location;
-    private Double groundspeed;
+    private Double groundSpeed;
+    private Double altitude;
     private String mode;
+    private DroneLocation nextCommand;
 
     private MavClient() {
 
@@ -57,7 +59,9 @@ public class MavClient {
             @Override
             public void run() {
                 location = getDataFromUrl("location", DroneLocation.class);
-                groundspeed = getDataFromUrl("groundspeed", Double.class);
+                nextCommand = getDataFromUrl("next", DroneLocation.class);
+                groundSpeed = getDataFromUrl("groundspeed", Double.class);
+                altitude = getDataFromUrl("altitude", Double.class);
                 mode = getDataFromUrl("mode", String.class).replace("\"", "");
             }
         }, 0, 1000);
@@ -73,7 +77,7 @@ public class MavClient {
     }
 
     public DroneStatus getDroneStatus(){
-        return new DroneStatus(location, groundspeed, mode);
+        return new DroneStatus(location,groundSpeed,mode,altitude,nextCommand);
     }
 
     public void goTo(LeafletLatLng leafletLatLng){
@@ -104,6 +108,5 @@ public class MavClient {
 
         return response.getEntity(responseObject);
     }
-
 
 }

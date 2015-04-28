@@ -1,46 +1,62 @@
 package org.wayfinder.mavlink.mavdata.model;
 
-import org.wayfinder.data.geojson.Point;
-
 /**
  * Created by bedash on 19.04.15.
  */
+
 public class DroneStatus {
 
     private DroneLocation droneLocation;
-    private Double groundspeed;
+    private Double groundSpeed;
+    private Double altitude;
     private String mode;
+    private DroneLocation nextCommand;
 
     public String getMode() {
         return mode;
     }
-
     public void setMode(String mode) {
         this.mode = mode;
     }
 
-    public Double getGroundspeed() {
-        return groundspeed;
+    public Double getGroundSpeed() {
+        return groundSpeed;
     }
-
-    public void setGroundspeed(Double groundspeed) {
-        this.groundspeed = groundspeed;
+    public void setGroundSpeed(Double groundSpeed) {
+        this.groundSpeed = groundSpeed;
     }
 
     public DroneLocation getDroneLocation() {
         return droneLocation;
     }
-
     public void setDroneLocation(DroneLocation droneLocation) {
         this.droneLocation = droneLocation;
     }
 
+    public Double getAltitude() {
+        return altitude;
+    }
+    public void setAltitude(Double altitude) {
+        this.altitude = altitude;
+    }
+
+    public DroneLocation getNextCommand() {
+        return nextCommand;
+    }
+    public void setNextCommand(DroneLocation nextCommand) {
+        this.nextCommand = nextCommand;
+    }
+
+
     public DroneStatus(){}
 
-    public DroneStatus(DroneLocation droneLocation, Double groundspeed, String mode){
+    public DroneStatus(DroneLocation droneLocation, Double groundSpeed,
+                       String mode, Double altitude, DroneLocation nextCommand){
         this.droneLocation = droneLocation;
-        this.groundspeed = groundspeed;
+        this.groundSpeed = groundSpeed;
         this.mode = mode;
+        this.altitude = altitude;
+        this.nextCommand = nextCommand;
     }
 
     @Override
@@ -48,7 +64,7 @@ public class DroneStatus {
         StringBuilder result = new StringBuilder();
         result.append("{");
         result.append("position: " + getDroneLocation() + ", ");
-        result.append("groundspeed: " + getGroundspeed() + ", ");
+        result.append("groundSpeed: " + getGroundSpeed() + ", ");
         result.append("mode: " + getMode());
         result.append("}");
         return result.toString();
