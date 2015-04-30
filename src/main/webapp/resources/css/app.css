@@ -185,3 +185,17 @@ input[type="radio"], input[type="checkbox"] {
     width: 100%;
     display: inline-table;
 }
+
+#path-loaded-table{
+    height:300px;
+}
+#path-loaded-table-body{
+    overflow-y: scroll;
+    height: 480px;
+    position: absolute;
+}
+
+.path-loaded-table-body-tr {
+    width: 100%;
+    display: inline-table;
+}

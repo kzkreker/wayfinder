@@ -58,11 +58,16 @@ public class MavClient {
         timet.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                location = getDataFromUrl("location", DroneLocation.class);
-                nextCommand = getDataFromUrl("next", DroneLocation.class);
-                groundSpeed = getDataFromUrl("groundspeed", Double.class);
-                altitude = getDataFromUrl("altitude", Double.class);
-                mode = getDataFromUrl("mode", String.class).replace("\"", "");
+                try {
+                    location = getDataFromUrl("location", DroneLocation.class);
+                    nextCommand = getDataFromUrl("next", DroneLocation.class);
+                    groundSpeed = getDataFromUrl("groundspeed", Double.class);
+                    altitude = getDataFromUrl("altitude", Double.class);
+                    mode = getDataFromUrl("mode", String.class).replace("\"", "");
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }, 0, 1000);
 

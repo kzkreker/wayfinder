@@ -2,7 +2,7 @@
          pageEncoding="utf8"%>
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <!DOCTYPE html>
@@ -16,11 +16,11 @@
     <title>WayFinder</title>
 
     <!--CSS-->
-    <link href="<c:url value="resources/bower_components/bootstrap/dist/css/bootstrap.min.css"/>" rel="stylesheet">
-    <link href="<c:url value="resources/bower_components/leaflet/dist/leaflet.css"/>" rel="stylesheet">
-    <link href="<c:url value="resources/bower_components/font-awesome/css/font-awesome.min.css"/>" rel="stylesheet">
-    <link href="<c:url value="resources/css/app.css"/>" rel="stylesheet">
-    <link href="<c:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.css"/>" rel="stylesheet" />
+    <link href="<core:url value="resources/bower_components/bootstrap/dist/css/bootstrap.min.css"/>" rel="stylesheet">
+    <link href="<core:url value="resources/bower_components/leaflet/dist/leaflet.css"/>" rel="stylesheet">
+    <link href="<core:url value="resources/bower_components/font-awesome/css/font-awesome.min.css"/>" rel="stylesheet">
+    <link href="<core:url value="resources/css/app.css"/>" rel="stylesheet">
+    <link href="<core:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.css"/>" rel="stylesheet" />
 </head>
 
 <body>
@@ -28,8 +28,12 @@
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="navbar-header">
         <div class="navbar-icon-container">
-            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn"><i class="fa fa-bars fa-lg white"></i></a>
-            <a href="#" class="navbar-icon pull-right visible-xs" id="sidebar-toggle-btn"><i class="fa fa-search fa-lg white"></i></a>
+            <a href="#" class="navbar-icon pull-right visible-xs" id="nav-btn">
+                <i class="fa fa-bars fa-lg white"></i>
+            </a>
+            <a href="#" class="navbar-icon pull-right visible-xs" id="sidebar-toggle-btn">
+                <i class="fa fa-search fa-lg white"></i>
+            </a>
         </div>
         <a class="navbar-brand" href="#">WayFinder</a>
     </div>
@@ -49,6 +53,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="controll-extent-btn"><i class="fa fa-dashboard"></i>&nbsp;&nbsp;Панель управления</a></li>
                     <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="route-extent-btn"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Расчет маршрута</a></li>
+                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="route-loaded-btn"><i class="fa fa-tasks"></i>&nbsp;&nbsp;Показать загруженнный  тек</a></li>
                 </ul>
             </li>
         </ul>
@@ -76,12 +81,8 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>Широта</td>
-                                    <td id='latCell'></td>
-                                </tr>
-                                <tr>
-                                    <td>Долгота</td>
-                                    <td  id='lonCell'></td>
+                                    <td>Координаты</td>
+                                    <td id='loc-сell'></td>
                                 </tr>
                                 <tr>
                                     <td>Скорость</td>
@@ -94,6 +95,10 @@
                                 <tr>
                                     <td>Режим</td>
                                     <td id='modeCell'></td>
+                                </tr>
+                                <tr>
+                                    <td>Заряд батареи </td>
+                                    <td id='bat-cell'></td>
                                 </tr>
 
                                 <tr>
@@ -121,11 +126,6 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-12" style="margin: 10px">
-
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -161,8 +161,7 @@
 
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <button type="submit" class="btn btn-default">Загрузить</button>
-                                <button type="button" class="btn btn-default">Прыгнуть</button>
+                                <button id="goto-mission" type="submit" class="btn btn-default">Загрузить</button>
                                 <button type="button" class="btn btn-default">Сбросить</button>
                             </div>
                         </div>
@@ -171,14 +170,14 @@
 
                     <div class="row">
                         <div class="col-md-12">
-                            <table  id="path-table" class="table table-hover table-striped">
+                            <table  id="path-table" class="table table-hover table-striped" style="display: none">
                                 <caption> Точки Пути </caption>
                                 <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Широта</th>
-                                    <th>Долгота</th>
-                                </tr>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Широта</th>
+                                        <th>Долгота</th>
+                                    </tr>
                                 </thead>
                                 <tbody  id="path-table-body">
                                 </tbody>
@@ -192,14 +191,44 @@
         </div>
     </div>
 
+    <div id="sidebar-way-loaded" class="sidebar"  style="display: none">
+        <div class="sidebar-wrapper">
+            <div class="panel panel-default features">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Загруженный маршрут
+                        <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-way-loaded-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
+                </div>
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table  id="path-loaded-table" class="table table-hover table-striped" style="display: none">
+                                <caption> Точки Пути </caption>
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Широта</th>
+                                    <th>Долгота</th>
+                                </tr>
+                                </thead>
+                                <tbody  id="path-loaded-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="map"></div>
 </div>
     <!--JS-->
-    <script src="<c:url value="resources/bower_components/jquery/dist/jquery.min.js"/>"></script>
-    <script src="<c:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
-    <script src="<c:url value="resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
-    <script src="<c:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.js"/>"></script>
-    <script src="<c:url value="resources/js/app.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/jquery/dist/jquery.min.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.js"/>"></script>
+    <script src="<core:url value="resources/js/app.js"/>"></script>
 
 </body>
 </html>
