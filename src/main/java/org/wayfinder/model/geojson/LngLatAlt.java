@@ -1,10 +1,10 @@
-package org.wayfinder.data.geojson;
+package org.wayfinder.model.geojson;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.wayfinder.data.geojson.jackson.LngLatAltDeserializer;
-import org.wayfinder.data.geojson.jackson.LngLatAltSerializer;
+import org.wayfinder.model.geojson.jackson.LngLatAltDeserializer;
+import org.wayfinder.model.geojson.jackson.LngLatAltSerializer;
 
 @JsonDeserialize(using = LngLatAltDeserializer.class)
 @JsonSerialize(using = LngLatAltSerializer.class)

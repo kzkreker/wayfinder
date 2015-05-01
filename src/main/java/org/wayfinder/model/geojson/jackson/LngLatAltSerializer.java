@@ -1,11 +1,11 @@
-package org.wayfinder.data.geojson.jackson;
+package org.wayfinder.model.geojson.jackson;
 
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.wayfinder.data.geojson.LngLatAlt;
+import org.wayfinder.model.geojson.LngLatAlt;
 
 import java.io.IOException;
 

@@ -138,7 +138,7 @@
                         <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-way-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
                 </div>
                 <div class="panel-body">
-                    <form class="form-horizontal">
+                    <div class="form-horizontal">
                         <div class="form-group">
                             <label for="input-start" class="col-sm-2 control-label">От</label>
                             <div class="col-sm-10">
@@ -161,12 +161,12 @@
 
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <button id="goto-mission" type="submit" class="btn btn-default">Загрузить</button>
+                                <button id="goto-mission" class="btn btn-default">Загрузить</button>
                                 <button type="button" class="btn btn-default">Сбросить</button>
                             </div>
                         </div>
 
-                    </form>
+                    </div>
 
                     <div class="row">
                         <div class="col-md-12">

@@ -1,4 +1,4 @@
-package org.wayfinder.data.geojson;
+package org.wayfinder.model.geojson;
 
 
 public class MultiPoint extends Geometry<LngLatAlt> {

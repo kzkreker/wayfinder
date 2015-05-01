@@ -54,8 +54,8 @@ public class MavClient {
                 }
             }), config);
 
-        Timer timet = new Timer("InMemoryProjectDalcTimer");
-        timet.scheduleAtFixedRate(new TimerTask() {
+        Timer timer = new Timer("MavClientTimer");
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 try {

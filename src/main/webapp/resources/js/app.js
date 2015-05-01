@@ -47,6 +47,7 @@ var point = new L.LayerGroup().addTo(map);
 var missionPoint = new L.LayerGroup().addTo(map);
 var paths = new L.LayerGroup().setZIndex(3).addTo(map);
 var vector = new L.LayerGroup().setZIndex(1).addTo(map);
+var buildingsLayer = new L.LayerGroup().addTo(map);
 
 var iconFrom = L.icon({
     iconUrl: 'resources/images/marker-icon-green.png',
@@ -70,6 +71,7 @@ var iconCar = L.icon({
 var start = null;
 var stop = null;
 var pointList = [];
+var buildings = {};
 
 L.tileLayer('http://tileServer.com/osm_tiles/{z}/{x}/{y}.png', {
     maxZoom: 18
@@ -338,4 +340,34 @@ $("body").on('mouseenter', ".path-table-body-tr",
     function() {
         missionPoint.clearLayers();
     });
-//map graw
+
+//get buildings
+
+function getBuildungs(){
+    $.ajax({
+        url: 'rest/overpass/status',
+        dataType: "JSON",
+        contentType: 'application/json',
+        success: function (data) {
+            if (!$.isEmptyObject(data)) {
+                buildings = data;
+                redrawBuildings(buildings);
+            }
+        }
+    });
+}
+
+setInterval(function() {
+    getBuildungs()
+}, 5000);
+
+function redrawBuildings(buildings){
+    buildingsLayer.clearLayers();
+    L.geoJson(buildings,{style:{
+        weight: 2,
+        color: "#999",
+        opacity: 1,
+        fillColor: "#B0DE5C",
+        fillOpacity: 0.8
+    }}).addTo(buildingsLayer);
+}
