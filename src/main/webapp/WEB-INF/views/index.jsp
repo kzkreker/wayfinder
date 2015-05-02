@@ -228,6 +228,7 @@
     <script src="<core:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
     <script src="<core:url value="resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
     <script src="<core:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/point-polygon-distance/point-polygon-distance.js"/>"></script>
     <script src="<core:url value="resources/js/app.js"/>"></script>
 
 </body>

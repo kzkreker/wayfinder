@@ -68,14 +68,52 @@ var iconCar = L.icon({
     iconAnchor: [20, 20]
 });
 
+var redLine = new L.Polyline( [],{
+    color: 'red',
+    weight: 5,
+    opacity: 0.8,
+    smoothFactor: 1
+})
+    .addTo(paths);
+
+var vectorPolyLine = new L.Polyline([],{
+    color: 'green',
+    weight: 12,
+    opacity: 0.9,
+    smoothFactor: 1
+})
+    .addTo(vector);
+
+var firstPolyLine = new L.Polyline([], {
+    color: 'blue',
+    weight: 5,
+    opacity: 0.4,
+    smoothFactor: 1
+})
+    .addTo(mission);
+
+var carPointer = new L.marker(new L.LatLng(0,0),{icon:iconCar})
+    .addTo(markers);
+
+var tileLayer = L.tileLayer('http://tileServer.com/osm_tiles/{z}/{x}/{y}.png', {
+    maxZoom: 18
+})
+    .addTo(map);
+
 var start = null;
 var stop = null;
 var pointList = [];
+var loadedMission = [];
 var buildings = {};
 
-L.tileLayer('http://tileServer.com/osm_tiles/{z}/{x}/{y}.png', {
-    maxZoom: 18
-}).addTo(map);
+
+getStatus();
+getMission();
+getBuildungs();
+
+setInterval(function() {getMission()}, 5000);
+setInterval(function() {getBuildungs()}, 5000);
+setInterval(function() {getStatus()}, 1000);
 
 function setStart (e) {
     start = e.latlng;
@@ -121,7 +159,6 @@ function getPath(){
 
 function drawPath(points){
     var content = "";
-    paths.clearLayers();
     pointList = [];
 
     points.forEach(function(item,i) {
@@ -132,15 +169,8 @@ function drawPath(points){
             item[0].toFixed(5) + '</td></tr>';
     });
 
-    var firstPolyLine = new L.Polyline(pointList, {
-        color: 'red',
-        weight: 5,
-        opacity: 0.8,
-        smoothFactor: 1
+    redLine.setLatLngs(pointList)
 
-    });
-
-    firstPolyLine.addTo(paths);
     $('#path-table')
         .show();
 
@@ -165,6 +195,48 @@ function zoomOut () {
     map.zoomOut();
 }
 
+function getMission(){
+    $.ajax({
+        url: 'rest/drone/getmission',
+        dataType: "JSON",
+        contentType: 'application/json',
+        success: function (data) {
+            if (!$.isEmptyObject(data)) {
+                loadedMission = data;
+                redrawMission(loadedMission);
+            }
+        }
+    });
+}
+
+$("#goto-mission").click(function() {
+    if(pointList.length>0){
+        $.ajax({
+            type: "POST",
+            dataType: "JSON",
+            contentType: 'application/json',
+            url: 'rest/drone/gotomission',
+            data:JSON.stringify(pointList),
+            success: function (data) {
+                console.log(data);
+            }
+        });
+    }
+});
+
+function getBuildungs(){
+    $.ajax({
+        url: 'rest/overpass/status',
+        dataType: "JSON",
+        contentType: 'application/json',
+        success: function (data) {
+            if (!$.isEmptyObject(data)) {
+                buildings = data;
+                redrawBuildings(buildings);
+            }
+        }
+    });
+}
 
 function getStatus(){
     $.ajax({
@@ -179,58 +251,25 @@ function getStatus(){
 }
 
 function redrawStatus(droneStatus){
-    $("#loc-cell").text(droneStatus.droneLocation.lat.toFixed(5) +"/" +droneStatus.droneLocation.lon.toFixed(5));
-    $("#next-cell").text(droneStatus.nextCommand.lat.toFixed(5) +"/" + droneStatus.nextCommand.lon.toFixed(5));
-    $("#groundSpeedCell").text(droneStatus.groundSpeed.toFixed(5));
-    $("#altitudeCell").text(droneStatus.altitude.toFixed(5));
-    $("#modeCell").text(droneStatus.mode);
+    if(droneStatus.droneLocation){
+        $("#loc-cell").text(droneStatus.droneLocation.lat.toFixed(5) +"/" + droneStatus.droneLocation.lon.toFixed(5));
+        $("#next-cell").text(droneStatus.nextCommand.lat.toFixed(5) +"/" + droneStatus.nextCommand.lon.toFixed(5));
+        $("#groundSpeedCell").text(droneStatus.groundSpeed.toFixed(5));
+        $("#altitudeCell").text(droneStatus.altitude.toFixed(5));
+        $("#modeCell").text(droneStatus.mode);
 
-    markers.clearLayers();
-    L.marker([droneStatus.droneLocation.lat, droneStatus.droneLocation.lon],{icon:iconCar})
-        .addTo(markers);
+        carPointer.setLatLng(new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
 
-    var vectorList = [];
-    vectorList.push(new   L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
-    vectorList.push(new   L.LatLng(droneStatus.nextCommand.lat, droneStatus.nextCommand.lon));
-
-    var vectorPolyLine = new L.Polyline(vectorList, {
-        color: 'green',
-        weight: 12,
-        opacity: 0.9,
-        smoothFactor: 1
-    });
-
-    vector.clearLayers();
-    vectorPolyLine.addTo(vector);
-
-}
-
-setInterval(function() {
-    getStatus()
-}, 1000);
-///
-var loadedMission = [];
-
-function getMission(){
-    loadedMission = [];
-
-    $.ajax({
-        url: 'http://roversim:8080/get_mission',
-        dataType: "JSON",
-        contentType: 'application/json',
-        success: function (data) {
-            if (!$.isEmptyObject(data)) {
-                loadedMission = data;
-                redrawMission(loadedMission);
-            }
-        }
-    });
+        var vectorList = [];
+        vectorList.push(new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
+        vectorList.push(new L.LatLng(droneStatus.nextCommand.lat, droneStatus.nextCommand.lon));
+        vectorPolyLine.setLatLngs(vectorList);
+    }
 }
 
 function redrawMission(missionPoints){
     var content ="";
     var pointList = [];
-    mission.clearLayers();
 
     missionPoints.forEach(function(item,i) {
         pointList.push(new L.LatLng(item.lat, item.lon));
@@ -240,15 +279,7 @@ function redrawMission(missionPoints){
             item.lon.toFixed(5) + '</td></tr>';
     });
 
-    var firstPolyLine = new L.Polyline(pointList, {
-        color: 'blue',
-        weight: 5,
-        opacity: 0.4,
-        smoothFactor: 1
-    });
-
-
-    firstPolyLine.addTo(mission);
+    firstPolyLine.setLatLngs(pointList);
 
     $('#path-loaded-table')
         .show();
@@ -258,14 +289,20 @@ function redrawMission(missionPoints){
         .append(content);
 }
 
-getStatus();
-getMission();
+function redrawBuildings(buildings) {
+    buildingsLayer.clearLayers();
+    L.geoJson(buildings, {
+        style: {
+            weight: 2,
+            color: "#999",
+            opacity: 1,
+            fillColor: "#B0DE5C",
+            fillOpacity: 0.8
+        },
+        onEachFeature: onEachFeature
+    }).addTo(buildingsLayer);
+}
 
-setInterval(function() {
-    getMission()
-}, 5000);
-
-//panel view
 $("#route-extent-btn").click(function() {
     $('#sidebar-way').show();
     $('#sidebar-way-loaded').hide();
@@ -306,21 +343,6 @@ $("#sidebar-way-loaded-hide-btn").click(function() {
     map.invalidateSize();
 });
 
-$("#goto-mission").click(function() {
-    if(pointList.length>0){
-        $.ajax({
-            type: "POST",
-            dataType: "JSON",
-            contentType: 'application/json',
-            url: 'http://roversim:8080/gotomission',
-            data:JSON.stringify(pointList),
-            success: function (data) {
-                console.log(data);
-            }
-        });
-    }
-});
-
 $("body").on('mouseenter', ".path-table-body-tr",
     function() {
         var pointId = this.id.replace("path_","");
@@ -341,33 +363,13 @@ $("body").on('mouseenter', ".path-table-body-tr",
         missionPoint.clearLayers();
     });
 
-//get buildings
+function onEachFeature(feature, layer) {
+    var popupContent = "";
 
-function getBuildungs(){
-    $.ajax({
-        url: 'rest/overpass/status',
-        dataType: "JSON",
-        contentType: 'application/json',
-        success: function (data) {
-            if (!$.isEmptyObject(data)) {
-                buildings = data;
-                redrawBuildings(buildings);
-            }
-        }
-    });
-}
+    if (feature.properties && feature.properties.addrhousenumber && feature.properties.addrstreet) {
+        popupContent += "<p>" + feature.properties.addrstreet +"</p>";
+        popupContent += "<p>" + feature.properties.addrhousenumber +"</p>";
+    }
 
-setInterval(function() {
-    getBuildungs()
-}, 5000);
-
-function redrawBuildings(buildings){
-    buildingsLayer.clearLayers();
-    L.geoJson(buildings,{style:{
-        weight: 2,
-        color: "#999",
-        opacity: 1,
-        fillColor: "#B0DE5C",
-        fillOpacity: 0.8
-    }}).addTo(buildingsLayer);
+    layer.bindPopup(popupContent);
 }

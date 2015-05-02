@@ -2,10 +2,10 @@ package org.wayfinder.mavlink.client;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,6 +36,7 @@ public class MavClient {
     private Double altitude;
     private String mode;
     private DroneLocation nextCommand;
+    private List<DroneLocation> mission;
 
     private MavClient() {
 
@@ -64,6 +66,7 @@ public class MavClient {
                     groundSpeed = getDataFromUrl("groundspeed", Double.class);
                     altitude = getDataFromUrl("altitude", Double.class);
                     mode = getDataFromUrl("mode", String.class).replace("\"", "");
+                    mission  = getDroneMission("get_mission");
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -85,19 +88,20 @@ public class MavClient {
         return new DroneStatus(location,groundSpeed,mode,altitude,nextCommand);
     }
 
-    public void goTo(LeafletLatLng leafletLatLng){
+    public void gotoMission(List<LeafletLatLng> coordinates){
 
-        Form form = new Form();
-        form.add("lat", leafletLatLng.getLat());
-        form.add("lon", leafletLatLng.getLng());
-
-        WebResource webResource = client.resource("http://" + hostName + ":" + port + "/track");
-        ClientResponse response = webResource
-                .type(MediaType.APPLICATION_FORM_URLENCODED_TYPE)
-                .post(ClientResponse.class, form);
+        WebResource webResource = client.resource("http://" + hostName + ":" + port + "/gotomission");
+        ClientResponse response =webResource
+                .accept("application/json")
+                .type("application/json")
+                .post(ClientResponse.class, coordinates);
 
         if (response.getStatus() != 200)
             throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+    }
+
+    public List<DroneLocation> getMission() {
+        return mission;
     }
 
     private <T> T getDataFromUrl(String uri,Class<T> responseObject){
@@ -112,6 +116,20 @@ public class MavClient {
             throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
 
         return response.getEntity(responseObject);
+    }
+
+    private List<DroneLocation> getDroneMission(String uri){
+
+        WebResource webResource = client.resource("http://" + hostName + ":" + port + "/"+uri);
+        ClientResponse response = webResource
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .get(ClientResponse.class);
+
+        if (response.getStatus() != 200)
+            throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+
+        return response.getEntity(new GenericType<List<DroneLocation>>(){});
     }
 
 }

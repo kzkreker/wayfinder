@@ -19,17 +19,11 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/rest/overpass")
 public class OverpassClientController {
-    private static Integer radius = 50;
-
 
     @RequestMapping(value = "/status",method = RequestMethod.GET)
     public @ResponseBody
     FeatureCollection getBuildings() throws IOException, JSONException {
         OverpassClient overpassClient = OverpassClient.getInstance();
-
-        MavClient mavClient = MavClient.getInstance();
-        DroneLocation  droneLocation = mavClient.getDroneStatus().getDroneLocation();
-
-        return overpassClient.getBuildings(droneLocation, 50);
+        return overpassClient.getBuildings();
     }
 }

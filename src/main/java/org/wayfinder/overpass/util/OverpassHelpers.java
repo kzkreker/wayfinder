@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * Created by kreker on 01.05.15.
  */
+
 public class OverpassHelpers {
 
     public static FeatureCollection parseOsm(String json ){
@@ -97,7 +98,7 @@ public class OverpassHelpers {
             JSONObject prop = obj.getJSONObject("tags");
             for(Iterator<String> iter = prop.keys();iter.hasNext();) {
                 String key = iter.next();
-                properties.put(key,prop.getString(key));
+                properties.put(key.replace(":",""),prop.getString(key));
             }
 
             return

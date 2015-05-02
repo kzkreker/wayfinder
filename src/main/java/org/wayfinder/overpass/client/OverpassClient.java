@@ -14,6 +14,7 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.wayfinder.mavlink.client.MavClient;
 import org.wayfinder.mavlink.mavdata.model.DroneLocation;
 import org.wayfinder.model.geojson.FeatureCollection;
 import org.wayfinder.overpass.util.OverpassHelpers;
@@ -34,6 +35,10 @@ public class OverpassClient {
     private Client client;
     private static String hostName = "overpass-api.de";
     private static String port = "80";
+    private FeatureCollection buildings;
+    private static Integer radius = 50;
+
+
 
     private  static  class OverpassClientHolder{
         private final static OverpassClient instance = new OverpassClient();
@@ -66,17 +71,19 @@ public class OverpassClient {
             @Override
             public void run() {
                 try {
-                    //submitForm();
+                    MavClient mavClient = MavClient.getInstance();
+                    DroneLocation  droneLocation = mavClient.getDroneStatus().getDroneLocation();
+                    buildings = getBuildingsOverpass(droneLocation,radius);
                 }
                 catch (Exception e){
                     e.printStackTrace();
                 }
             }
-        }, 0, 10000);
+        }, 0, 5000);
 
     }
 
-    public FeatureCollection  getBuildings(DroneLocation droneLocation, Integer radius) {
+    private FeatureCollection  getBuildingsOverpass(DroneLocation droneLocation, Integer radius) {
         if(droneLocation!=null) {
             String data =
                     "<osm-script output=\"json\">\n" +
@@ -107,5 +114,9 @@ public class OverpassClient {
             return OverpassHelpers.parseOsm(json);
         }
         return new FeatureCollection();
+    }
+
+    public FeatureCollection getBuildings(){
+        return  this.buildings;
     }
 }
