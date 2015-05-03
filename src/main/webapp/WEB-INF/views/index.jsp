@@ -44,16 +44,21 @@
                 <a id="toolsDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe white"></i>&nbsp;&nbsp;Карта <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                     <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="full-extent-btn"><i class="fa fa-arrows-alt"></i>&nbsp;&nbsp;Развернуть во весь экран</a></li>
-                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="legend-btn"><i class="fa fa-picture-o"></i>&nbsp;&nbsp;Показать легенду</a></li>
+                    <li>
+                        <a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="legend-btn" data-toggle="modal" data-target="#map-info-modal">
+                        <i class="fa fa-picture-o"></i>
+                        &nbsp;&nbsp;Показать легенду
+                        </a>
+                    </li>
                </ul>
             </li>
 
             <li class="dropdown">
                 <a id="droneDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-paper-plane white"></i>&nbsp;&nbsp;Автопилот <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="controll-extent-btn"><i class="fa fa-dashboard"></i>&nbsp;&nbsp;Панель управления</a></li>
+                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="controll-extent-btn"><i class="fa fa-dashboard"></i>&nbsp;&nbsp;Статус движения</a></li>
                     <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="route-extent-btn"><i class="fa fa-map-marker"></i>&nbsp;&nbsp;Расчет маршрута</a></li>
-                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="route-loaded-btn"><i class="fa fa-tasks"></i>&nbsp;&nbsp;Показать загруженнный  тек</a></li>
+                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="route-loaded-btn"><i class="fa fa-tasks"></i>&nbsp;&nbsp;Загруженный маршрут</a></li>
                 </ul>
             </li>
         </ul>
@@ -61,28 +66,24 @@
 </div>
 
 <div id="container">
-    <div id="sidebar-manage" class="sidebar" style="display: none">
+    <div id="sidebar-manage" class="sidebar">
         <div class="sidebar-wrapper">
             <div class="panel panel-default features">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Панель управления
-                        <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
+                    <h3 class="panel-title">
+                        Статус движения
+                        <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-hide-btn"><i class="fa fa-chevron-left"></i></button>
+                    </h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12">
                             <table class="table table-hover table-striped">
-                                <caption>Статус </caption>
-                                <thead>
-                                    <tr>
-                                        <th>Параметр</th>
-                                        <th>Значение</th>
-                                    </tr>
-                                </thead>
+                                <caption> Статус БПЛА</caption>
                                 <tbody>
                                 <tr>
                                     <td>Координаты</td>
-                                    <td id='loc-сell'></td>
+                                    <td id='loc-cell'></td>
                                 </tr>
                                 <tr>
                                     <td>Скорость</td>
@@ -103,40 +104,41 @@
 
                                 <tr>
                                     <td>Следующая точка</td>
-                                    <td id='next-сell'></td>
+                                    <td id='next-cell'></td>
                                 </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table  id="wall-table" class="table table-hover table-striped">
+                                <caption> Ближайшие здания</caption>
+
+                                <tbody>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12" style="margin: 10px">
-                        <button type="button" class="btn btn-default">
-                            Перевисти в Hold
-                        </button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12" style="margin: 10px">
-                        <button type="button" class="btn btn-default">
-                            Перевисти в Auto
-                        </button>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 
-    <div id="sidebar-way" class="sidebar" >
+    <div id="sidebar-way" class="sidebar"  style="display: none">
         <div class="sidebar-wrapper">
             <div class="panel panel-default features">
+
                 <div class="panel-heading">
                     <h3 class="panel-title">Расчет маршрута
-                        <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-way-hide-btn"><i class="fa fa-chevron-left"></i></button></h3>
+                        <button type="button" class="btn btn-xs btn-default pull-right" id="sidebar-way-hide-btn">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                    </h3>
                 </div>
+
                 <div class="panel-body">
                     <div class="form-horizontal">
                         <div class="form-group">
@@ -161,8 +163,21 @@
 
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <button id="goto-mission" class="btn btn-default">Загрузить</button>
-                                <button type="button" class="btn btn-default">Сбросить</button>
+                                <button id="goto-mission" class="btn btn-default">
+                                    Загрузить
+                                </button>
+
+                                <button type="button" class="btn btn-default">
+                                    Сбросить
+                                </button>
+
+                                <button type="button" class="btn btn-default">
+                                    Auto
+                                </button>
+
+                                <button type="button" class="btn btn-default">
+                                    Hold
+                                </button>
                             </div>
                         </div>
 
@@ -223,6 +238,24 @@
 
     <div id="map"></div>
 </div>
+
+<div class="modal fade" id="map-info-modal" tabindex="-1" role="dialog" aria-labelledby="map-info-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="map-info-modal-label">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <!--JS-->
     <script src="<core:url value="resources/bower_components/jquery/dist/jquery.min.js"/>"></script>
     <script src="<core:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>

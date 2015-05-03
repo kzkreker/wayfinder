@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.wayfinder.mavlink.client.MavClient;
-import org.wayfinder.mavlink.mavdata.model.DroneLocation;
 import org.wayfinder.model.geojson.FeatureCollection;
 import org.wayfinder.overpass.client.OverpassClient;
 

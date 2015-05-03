@@ -1,7 +1,6 @@
 package org.wayfinder.overpass.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -11,9 +10,6 @@ import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 import org.wayfinder.mavlink.client.MavClient;
 import org.wayfinder.mavlink.mavdata.model.DroneLocation;
 import org.wayfinder.model.geojson.FeatureCollection;
@@ -30,15 +26,14 @@ import java.util.TimerTask;
 /**
  * Created by kreker on 01.05.15.
  */
+
 public class OverpassClient {
 
     private Client client;
-    private static String hostName = "overpass-api.de";
+    private static String hostName = "overpass";
     private static String port = "80";
     private FeatureCollection buildings;
     private static Integer radius = 50;
-
-
 
     private  static  class OverpassClientHolder{
         private final static OverpassClient instance = new OverpassClient();

@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * Created by bedash on 19.04.15.
  */
+
 public class DroneLocation implements Serializable {
     private Double lat;
     private Double lon;
@@ -12,7 +13,6 @@ public class DroneLocation implements Serializable {
     public Double getLon() {
         return lon;
     }
-
     public void setLon(Double lon) {
         this.lon = lon;
     }
@@ -20,7 +20,6 @@ public class DroneLocation implements Serializable {
     public Double getLat() {
         return lat;
     }
-
     public void setLat(Double lat) {
         this.lat = lat;
     }

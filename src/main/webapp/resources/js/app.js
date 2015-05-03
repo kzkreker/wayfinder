@@ -10,7 +10,7 @@ var southWest = L.latLng(55.4165, 39.52881),
 
 map = L.map('map', {
     center:  new L.LatLng(59.902687, 30.314775),
-    zoom: 10,
+    zoom: 14,
     maxBounds:bounds,
     maxZoom:18,
     minZoom:10,
@@ -95,7 +95,7 @@ var firstPolyLine = new L.Polyline([], {
 var carPointer = new L.marker(new L.LatLng(0,0),{icon:iconCar})
     .addTo(markers);
 
-var tileLayer = L.tileLayer('http://tileServer.com/osm_tiles/{z}/{x}/{y}.png', {
+var tileLayer = L.tileLayer('rest/tiles/{z}/{x}/{y}.png', {
     maxZoom: 18
 })
     .addTo(map);
@@ -252,10 +252,11 @@ function getStatus(){
 
 function redrawStatus(droneStatus){
     if(droneStatus.droneLocation){
-        $("#loc-cell").text(droneStatus.droneLocation.lat.toFixed(5) +"/" + droneStatus.droneLocation.lon.toFixed(5));
-        $("#next-cell").text(droneStatus.nextCommand.lat.toFixed(5) +"/" + droneStatus.nextCommand.lon.toFixed(5));
+        $("#loc-cell").text(droneStatus.droneLocation.lat.toFixed(5) +", " + droneStatus.droneLocation.lon.toFixed(5));
+        $("#next-cell").text(droneStatus.nextCommand.lat.toFixed(5) +", " + droneStatus.nextCommand.lon.toFixed(5));
         $("#groundSpeedCell").text(droneStatus.groundSpeed.toFixed(5));
         $("#altitudeCell").text(droneStatus.altitude.toFixed(5));
+        $("#bat-cell").text("89%");
         $("#modeCell").text(droneStatus.mode);
 
         carPointer.setLatLng(new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));

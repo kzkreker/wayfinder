@@ -35,4 +35,6 @@ public class MavClientController {
         MavClient mavClient = MavClient.getInstance();
         return mavClient.getMission();
     }
+
+
 }
