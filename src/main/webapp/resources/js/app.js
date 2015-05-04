@@ -26,7 +26,11 @@ map = L.map('map', {
     {
         text: 'Показать координаты',
         callback: showCoordinates
-    }, {
+    }, '-', {
+        text: 'Центрировать по БПЛА',
+        callback: centerRobot
+    },
+    {
         text: 'Центрировать карту',
         callback: centerMap
     }, '-', {
@@ -105,7 +109,8 @@ var stop = null;
 var pointList = [];
 var loadedMission = [];
 var buildings = {};
-
+var centerRobo = false;
+var droneStatus = null;
 
 getStatus();
 getMission();
@@ -137,6 +142,10 @@ function redrawPointers(){
     if(stop) {
         L.marker([stop.lat, stop.lng],{icon:iconTo}).addTo(pointers);
     }
+}
+
+function centerRobot(){
+    centerRobo = !centerRobo;
 }
 
 function getPath(){
@@ -218,7 +227,7 @@ $("#goto-mission").click(function() {
             url: 'rest/drone/gotomission',
             data:JSON.stringify(pointList),
             success: function (data) {
-                console.log(data);
+
             }
         });
     }
@@ -232,7 +241,6 @@ function getBuildungs(){
         success: function (data) {
             if (!$.isEmptyObject(data)) {
                 buildings = data;
-                redrawBuildings(buildings);
             }
         }
     });
@@ -244,7 +252,8 @@ function getStatus(){
         dataType : "json",
         success: function (data) {
             if (!$.isEmptyObject(data)) {
-                redrawStatus(data);
+                droneStatus = data
+                redrawStatus(droneStatus);
             }
         }
     });
@@ -265,6 +274,38 @@ function redrawStatus(droneStatus){
         vectorList.push(new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
         vectorList.push(new L.LatLng(droneStatus.nextCommand.lat, droneStatus.nextCommand.lon));
         vectorPolyLine.setLatLngs(vectorList);
+
+        if(centerRobo){
+            map.panTo (new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
+        }
+
+        var content = "";
+
+        if(typeof buildings.features != 'undefined') {
+            buildings.features.forEach(function (item, i) {
+                if (typeof item.properties.addrstreet == 'undefined') item.properties.addrstreet = "Без адреса";
+                if (typeof item.properties.addrhousenumber == 'undefined') item.properties.addrhousenumber = "-";
+                if (typeof item.properties.buildinglevels == 'undefined') item.properties.buildinglevels = "-";
+
+                var dist = distToFeature(item, droneStatus);
+
+                content += '<tr id ="building_' + i + '" class="wall-table-body-tr"><td>' +
+                    item.properties.addrstreet + '</td><td>' +
+                    dist.toFixed(1) + '</td><td>' +
+                    item.properties.addrhousenumber + '</td><td>' +
+                    item.properties.buildinglevels + '</td></tr>';
+
+            });
+
+            $('#wall-table')
+                .show();
+
+            $('#wall-table-body')
+                .empty()
+                .append(content);
+
+            redrawBuildings(buildings)
+        }
     }
 }
 
@@ -291,17 +332,24 @@ function redrawMission(missionPoints){
 }
 
 function redrawBuildings(buildings) {
+
     buildingsLayer.clearLayers();
+
     L.geoJson(buildings, {
-        style: {
-            weight: 2,
-            color: "#999",
-            opacity: 1,
-            fillColor: "#B0DE5C",
-            fillOpacity: 0.8
+
+        style: function(feature){
+            var dist = distToFeature(feature,droneStatus);
+
+            if (dist>=30)
+                return { weight: 2,color: "#999", opacity: 1,fillColor: "GreenYellow", fillOpacity: 0.8};
+            else if (dist>20&&dist<30)
+                return { weight: 2,color: "#999", opacity: 1,fillColor: "Yellow", fillOpacity: 0.8};
+            else if (dist<=20)
+                return { weight: 2,color: "#999", opacity: 1,fillColor: "Red", fillOpacity: 0.8};
         },
         onEachFeature: onEachFeature
     }).addTo(buildingsLayer);
+
 }
 
 $("#route-extent-btn").click(function() {
@@ -373,4 +421,67 @@ function onEachFeature(feature, layer) {
     }
 
     layer.bindPopup(popupContent);
+}
+
+Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+};
+
+function dist2(v, w)
+{
+    var R = 6371;
+    var x1 = v.x-w.x;
+    var dLat = x1.toRad();
+    var x2 = v.y-w.y;
+    var dLon = x2.toRad();
+    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(w.x.toRad()) * Math.cos(v.x.toRad()) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c * 1000;
+}
+
+function distToSegment(p, v, w) {
+    var l2 = dist2(v, w);
+    if (l2 == 0) return dist2(p, v);
+    var t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+    if (t < 0) return dist2(p, v);
+    if (t > 1) return dist2(p, w);
+    return dist2(p, { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) });
+}
+
+function distToFeature(feature,droneStatus){
+
+    var points = feature.geometry.coordinates[0];
+    var minDist = -1;
+
+    for(var i = 0; i <  points.length-1; i++ ){
+        var pointV = points[i];
+        var pointW = points[i+1];
+
+        var dis = distToSegment(latlonToPoint(droneStatus.droneLocation),
+                                 arrToPoint(pointV),
+                                 arrToPoint(pointW));
+
+        if(minDist==-1)
+            minDist = dis;
+
+        if(minDist > dis )
+            minDist = dis;
+    }
+    return minDist;
+};
+
+function arrToPoint(arr){
+    var point = {};
+    point['x'] = arr[1];
+    point['y'] = arr[0];
+    return point;
+}
+
+function latlonToPoint(latlon){
+    var point = {};
+    point['x'] = latlon.lat;
+    point['y'] = latlon.lon;
+    return point;
 }

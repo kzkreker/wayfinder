@@ -45,7 +45,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="full-extent-btn"><i class="fa fa-arrows-alt"></i>&nbsp;&nbsp;Развернуть во весь экран</a></li>
                     <li>
-                        <a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="legend-btn" data-toggle="modal" data-target="#map-info-modal">
+                        <a href="#"  id="legend-btn" data-toggle="modal" data-target="#map-info-modal">
                         <i class="fa fa-picture-o"></i>
                         &nbsp;&nbsp;Показать легенду
                         </a>
@@ -81,35 +81,34 @@
                             <table class="table table-hover table-striped">
                                 <caption> Статус БПЛА</caption>
                                 <tbody>
-                                <tr>
-                                    <td>Координаты</td>
-                                    <td id='loc-cell'></td>
-                                </tr>
-                                <tr>
-                                    <td>Скорость</td>
-                                    <td id='groundSpeedCell'></td>
-                                </tr>
-                                <tr>
-                                    <td>Высота</td>
-                                    <td id='altitudeCell'></td>
-                                </tr>
-                                <tr>
-                                    <td>Режим</td>
-                                    <td id='modeCell'></td>
-                                </tr>
-                                <tr>
-                                    <td>Заряд батареи </td>
-                                    <td id='bat-cell'></td>
-                                </tr>
+                                    <tr>
+                                        <td>Координаты</td>
+                                        <td id='loc-cell'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Скорость</td>
+                                        <td id='groundSpeedCell'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Высота</td>
+                                        <td id='altitudeCell'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Режим</td>
+                                        <td id='modeCell'></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Заряд батареи </td>
+                                        <td id='bat-cell'></td>
+                                    </tr>
 
-                                <tr>
-                                    <td>Следующая точка</td>
-                                    <td id='next-cell'></td>
-                                </tr>
+                                    <tr>
+                                        <td>Следующая точка</td>
+                                        <td id='next-cell'></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
 
                     <div class="row">
@@ -117,8 +116,10 @@
                             <table  id="wall-table" class="table table-hover table-striped">
                                 <caption> Ближайшие здания</caption>
 
-                                <tbody>
+                                <tbody  id="wall-table-body">
+
                                 </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -244,10 +245,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="map-info-modal-label">Modal title</h4>
+                <h4 class="modal-title" id="map-info-modal-label">Условные обозначения</h4>
             </div>
             <div class="modal-body">
-                ...
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
@@ -261,7 +262,6 @@
     <script src="<core:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
     <script src="<core:url value="resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
     <script src="<core:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.js"/>"></script>
-    <script src="<core:url value="resources/bower_components/point-polygon-distance/point-polygon-distance.js"/>"></script>
     <script src="<core:url value="resources/js/app.js"/>"></script>
 
 </body>
