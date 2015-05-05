@@ -36,5 +36,18 @@ public class MavClientController {
         return mavClient.getMission();
     }
 
+    @RequestMapping(value = "/hold",method = RequestMethod.GET)
+    public @ResponseBody
+    String droneHold() {
+        MavClient mavClient = MavClient.getInstance();
+        return mavClient.droneHold();
+    }
+
+    @RequestMapping(value = "/auto",method = RequestMethod.GET)
+    public @ResponseBody
+    String droneAuto() {
+        MavClient mavClient = MavClient.getInstance();
+        return mavClient.droneAuto();
+    }
 
 }

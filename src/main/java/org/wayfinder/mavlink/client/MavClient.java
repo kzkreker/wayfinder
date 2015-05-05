@@ -132,4 +132,11 @@ public class MavClient {
         return response.getEntity(new GenericType<List<DroneLocation>>(){});
     }
 
+    public String droneHold(){
+        return getDataFromUrl("hold", String.class);
+    }
+
+    public String droneAuto(){
+        return getDataFromUrl("auto", String.class);
+    }
 }

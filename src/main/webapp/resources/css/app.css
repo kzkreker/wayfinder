@@ -215,3 +215,17 @@ input[type="radio"], input[type="checkbox"] {
     width: 100%;
     display: inline-table;
 }
+
+.info-div-img {
+    width: 60px;
+    height: 60px;
+}
+
+.info-img{
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

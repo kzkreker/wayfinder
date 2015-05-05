@@ -21,6 +21,9 @@
     <link href="<core:url value="resources/bower_components/font-awesome/css/font-awesome.min.css"/>" rel="stylesheet">
     <link href="<core:url value="resources/css/app.css"/>" rel="stylesheet">
     <link href="<core:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.css"/>" rel="stylesheet" />
+    <link href="<core:url value="resources/bower_components/leaflet-draw/dist/leaflet.draw.css"/>" rel="stylesheet" />
+    <link href="<core:url value="resources/bower_components/lmtm-Leaflet.MeasureControl/leaflet.measurecontrol.css"/>" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -39,15 +42,30 @@
     </div>
     <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-            <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="about-btn"><i class="fa fa-question-circle white"></i>&nbsp;&nbsp;О приложении</a></li>
+            <li>
+                <a href="#" data-toggle="modal" data-target="#app-info-modal" id="about-btn">
+                <i class="fa fa-question-circle white"></i>
+                &nbsp;&nbsp;О приложении
+                </a>
+            </li>
+
             <li class="dropdown">
-                <a id="toolsDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-globe white"></i>&nbsp;&nbsp;Карта <b class="caret"></b></a>
+                <a id="toolsDrop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-globe white"></i>
+                    &nbsp;&nbsp;Карта
+                    <b class="caret"></b>
+                </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="full-extent-btn"><i class="fa fa-arrows-alt"></i>&nbsp;&nbsp;Развернуть во весь экран</a></li>
+                    <li>
+                        <a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="full-extent-btn">
+                            <i class="fa fa-arrows-alt"></i>
+                            &nbsp;&nbsp;Развернуть во весь экран
+                        </a>
+                    </li>
                     <li>
                         <a href="#"  id="legend-btn" data-toggle="modal" data-target="#map-info-modal">
-                        <i class="fa fa-picture-o"></i>
-                        &nbsp;&nbsp;Показать легенду
+                            <i class="fa fa-picture-o"></i>
+                            &nbsp;&nbsp;Показать легенду
                         </a>
                     </li>
                </ul>
@@ -62,7 +80,7 @@
                 </ul>
             </li>
         </ul>
-    </div><!--/.navbar-collapse -->
+    </div>
 </div>
 
 <div id="container">
@@ -81,7 +99,7 @@
                             <table class="table table-hover table-striped">
                                 <caption> Статус БПЛА</caption>
                                 <tbody>
-                                    <tr>
+                                    <tr id='loc-td'>
                                         <td>Координаты</td>
                                         <td id='loc-cell'></td>
                                     </tr>
@@ -128,7 +146,7 @@
         </div>
     </div>
 
-    <div id="sidebar-way" class="sidebar"  style="display: none">
+    <div id="sidebar-way" class="sidebar">
         <div class="sidebar-wrapper">
             <div class="panel panel-default features">
 
@@ -168,15 +186,11 @@
                                     Загрузить
                                 </button>
 
-                                <button type="button" class="btn btn-default">
-                                    Сбросить
-                                </button>
-
-                                <button type="button" class="btn btn-default">
+                                <button id="set-auto" type="button" class="btn btn-default">
                                     Auto
                                 </button>
 
-                                <button type="button" class="btn btn-default">
+                                <button id="set-hold" type="button" class="btn btn-default">
                                     Hold
                                 </button>
                             </div>
@@ -200,9 +214,7 @@
                             </table>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -248,7 +260,114 @@
                 <h4 class="modal-title" id="map-info-modal-label">Условные обозначения</h4>
             </div>
             <div class="modal-body">
+                <div class="row" >
+                    <div class="col-xs-4 col-sm-4">
+                        <img src="resources/images/car.png" class="img-thumbnail">
+                    </div>
+                    <div class="col-xs-8 col-sm-8"  >
+                        <blockquote>
+                            <p>БПЛА</p>
+                            <footer>Текущее положение БПЛА на карте</footer>
+                        </blockquote>
+                    </div>
+                </div>
 
+                <div class="row">
+                    <div class="col-xs-4 col-sm-4">
+                        <img src="resources/images/marker-icon-blue.png" class="img-thumbnail">
+                    </div>
+                    <div class="col-xs-8 col-sm-8">
+                        <blockquote>
+                            <p>Маркер точки путии</p>
+                            <footer>Указывает на точку пути на карте</footer>
+                        </blockquote>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-4 col-sm-4">
+                        <img src="resources/images/marker-icon-green.png" class="img-thumbnail">
+                    </div>
+                    <div class="col-xs-8 col-sm-8">
+                        <blockquote>
+                            <p>Указатель начала пути</p>
+                            <footer>Указывает на начало пути БПЛА</footer>
+                        </blockquote>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-4 col-sm-4">
+                        <img src="resources/images/marker-icon-red.png" class="img-thumbnail">
+                    </div>
+
+                    <div class="col-xs-8 col-sm-8">
+                        <blockquote>
+                            <p>Указатель конца пути</p>
+                            <footer>Указывает на конец пути БПЛА</footer>
+                        </blockquote>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <blockquote>
+                            <p>Синяя линия</p>
+                            <footer>Загруженный трек автопилота</footer>
+                        </blockquote>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <blockquote>
+                            <p>Красная линия</p>
+                            <footer>Маршрут по дорогам общего пользования</footer>
+                        </blockquote>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <blockquote>
+                            <p>Зеленая линия</p>
+                            <footer>Вектор движения робота</footer>
+                        </blockquote>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <blockquote>
+                            <p>Здания различных цветов</p>
+                            <footer>Красный<20m до  здания, Желтый >20m но <30m, Зеленый>30м</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="app-info-modal" tabindex="-1" role="dialog" aria-labelledby="app-info-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="app-info-modal-label">О приложении</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12">
+                        <blockquote>
+                            <p>Философия приложения</p>
+                            <footer>Использование метеданных OSM для расчета тека автопилотов APM 2.5</footer>
+                        </blockquote>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
@@ -262,6 +381,8 @@
     <script src="<core:url value="resources/bower_components/bootstrap/dist/js/bootstrap.min.js"/>"></script>
     <script src="<core:url value="resources/bower_components/leaflet/dist/leaflet.js"/>"></script>
     <script src="<core:url value="resources/bower_components/Leaflet.contextmenu/dist/leaflet.contextmenu.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/leaflet-draw/dist/leaflet.draw.js"/>"></script>
+    <script src="<core:url value="resources/bower_components/lmtm-Leaflet.MeasureControl/leaflet.measurecontrol.js"/>"></script>
     <script src="<core:url value="resources/js/app.js"/>"></script>
 
 </body>

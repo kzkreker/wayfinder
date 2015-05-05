@@ -82,16 +82,16 @@ public class OverpassClient {
         if(droneLocation!=null) {
             String data =
                     "<osm-script output=\"json\">\n" +
-                            "    <query into=\"_\" type=\"way\">\n" +
-                            "        <around lat=\"" + droneLocation.getLat() + "\" lon=\"" + droneLocation.getLon() + "\" radius=\"" + radius + "\"/>\n" +
-                            "        <has-kv k=\"building\" modv=\"\" v=\"\"/>\n" +
-                            "    </query>\n" +
-                            "    <union into=\"_\">\n" +
-                            "        <item set=\"_\"/>\n" +
-                            "        <recurse from=\"_\" type=\"down\"/>\n" +
-                            "    </union>\n" +
-                            "    <print from=\"_\" limit=\"\" mode=\"body\" order=\"id\"/>\n" +
-                            "</osm-script> ";
+                    "    <query into=\"_\" type=\"way\">\n" +
+                    "        <around lat=\"" + droneLocation.getLat() + "\" lon=\"" + droneLocation.getLon() + "\" radius=\"" + radius + "\"/>\n" +
+                    "        <has-kv k=\"building\" modv=\"\" v=\"\"/>\n" +
+                    "    </query>\n" +
+                    "    <union into=\"_\">\n" +
+                    "        <item set=\"_\"/>\n" +
+                    "        <recurse from=\"_\" type=\"down\"/>\n" +
+                    "    </union>\n" +
+                    "    <print from=\"_\" limit=\"\" mode=\"body\" order=\"id\"/>\n" +
+                    "</osm-script> ";
 
             Form form = new Form();
             form.add("data", data);

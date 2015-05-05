@@ -1,9 +1,3 @@
-/**
- * Created by kreker on 15.04.15.
- * tileserver.com/osm_tiles/
- * http://c.tile.openstreetmap.org
- */
-
 var southWest = L.latLng(55.4165, 39.52881),
     northEast = L.latLng(60.6920, 28.2070),
     bounds = L.latLngBounds(southWest, northEast);
@@ -26,14 +20,13 @@ map = L.map('map', {
     {
         text: 'Показать координаты',
         callback: showCoordinates
-    }, '-', {
-        text: 'Центрировать по БПЛА',
-        callback: centerRobot
-    },
-    {
+    }, '-',{
         text: 'Центрировать карту',
         callback: centerMap
-    }, '-', {
+    }, {
+        text: 'Центрировать по БПЛА',
+        callback: centerRobot
+    } , '-', {
         text: 'Приблизить',
         icon: 'resources/images/zoom-in.png',
         callback: zoomIn
@@ -52,6 +45,8 @@ var missionPoint = new L.LayerGroup().addTo(map);
 var paths = new L.LayerGroup().setZIndex(3).addTo(map);
 var vector = new L.LayerGroup().setZIndex(1).addTo(map);
 var buildingsLayer = new L.LayerGroup().addTo(map);
+L.Control.measureControl().addTo(map);
+var popup = L.popup();
 
 var iconFrom = L.icon({
     iconUrl: 'resources/images/marker-icon-green.png',
@@ -109,7 +104,6 @@ var stop = null;
 var pointList = [];
 var loadedMission = [];
 var buildings = {};
-var centerRobo = false;
 var droneStatus = null;
 
 getStatus();
@@ -122,14 +116,14 @@ setInterval(function() {getStatus()}, 1000);
 
 function setStart (e) {
     start = e.latlng;
-    $("#input-start").val(start.lat + ", " +  start.lng);
+    $("#input-start").val(start.lat.toFixed(5) + ", " +  start.lng.toFixed(5));
     redrawPointers();
     getPath();
 }
 
 function setEnd (e) {
     stop = e.latlng;
-    $("#input-stop").val(start.lat + ", " +  start.lng);
+    $("#input-stop").val(start.lat.toFixed(5) + ", " +  start.lng.toFixed(5));
     redrawPointers();
     getPath();
 }
@@ -144,10 +138,6 @@ function redrawPointers(){
     }
 }
 
-function centerRobot(){
-    centerRobo = !centerRobo;
-}
-
 function getPath(){
     if (start && stop) {
         $.ajax({
@@ -155,11 +145,11 @@ function getPath(){
             data: { point:[start.lat+","+start.lng,stop.lat+","+stop.lng],
                     type:'json',
                     points_encoded:'false'},
-            url: 'http://graphhopper:8989/route',
+            url: '/rest/graphhopper',
             dataType: "json",
             traditional: true,
             success: function (data) {
-                var points =  data.paths[0].points.coordinates;
+                var points =  data;
                 drawPath(points)
             }
         });
@@ -196,6 +186,12 @@ function centerMap (e) {
     map.panTo(e.latlng);
 }
 
+
+function centerRobot () {
+    map.panTo (new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
+}
+
+
 function zoomIn () {
     map.zoomIn();
 }
@@ -205,18 +201,37 @@ function zoomOut () {
 }
 
 function getMission(){
+
     $.ajax({
         url: 'rest/drone/getmission',
         dataType: "JSON",
         contentType: 'application/json',
         success: function (data) {
-            if (!$.isEmptyObject(data)) {
-                loadedMission = data;
-                redrawMission(loadedMission);
-            }
+            loadedMission = data;
+            redrawMission(loadedMission);
         }
     });
 }
+
+$("#set-hold").click(function(){
+    $.ajax({
+        url: 'rest/drone/hold',
+        dataType: "JSON",
+        contentType: 'application/json',
+        success: function (data) {
+        }
+    });
+});
+
+$("#set-auto").click(function(){
+    $.ajax({
+        url: 'rest/drone/auto',
+        dataType: "JSON",
+        contentType: 'application/json',
+        success: function (data) {
+        }
+    });
+});
 
 $("#goto-mission").click(function() {
     if(pointList.length>0){
@@ -252,7 +267,7 @@ function getStatus(){
         dataType : "json",
         success: function (data) {
             if (!$.isEmptyObject(data)) {
-                droneStatus = data
+                droneStatus = data;
                 redrawStatus(droneStatus);
             }
         }
@@ -274,10 +289,6 @@ function redrawStatus(droneStatus){
         vectorList.push(new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
         vectorList.push(new L.LatLng(droneStatus.nextCommand.lat, droneStatus.nextCommand.lon));
         vectorPolyLine.setLatLngs(vectorList);
-
-        if(centerRobo){
-            map.panTo (new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
-        }
 
         var content = "";
 
@@ -346,8 +357,7 @@ function redrawBuildings(buildings) {
                 return { weight: 2,color: "#999", opacity: 1,fillColor: "Yellow", fillOpacity: 0.8};
             else if (dist<=20)
                 return { weight: 2,color: "#999", opacity: 1,fillColor: "Red", fillOpacity: 0.8};
-        },
-        onEachFeature: onEachFeature
+        }
     }).addTo(buildingsLayer);
 
 }
@@ -387,6 +397,10 @@ $("#route-loaded-btn").click(function() {
     map.invalidateSize();
 });
 
+$("#loc-td").click(function() {
+    map.panTo (new L.LatLng(droneStatus.droneLocation.lat, droneStatus.droneLocation.lon));
+});
+
 $("#sidebar-way-loaded-hide-btn").click(function() {
     $('#sidebar-way-loaded').hide();
     map.invalidateSize();
@@ -395,7 +409,9 @@ $("#sidebar-way-loaded-hide-btn").click(function() {
 $("body").on('mouseenter', ".path-table-body-tr",
     function() {
         var pointId = this.id.replace("path_","");
-        L.marker([pointList[pointId].lat, pointList[pointId].lng]).addTo(point);
+        L.marker([pointList[pointId].lat, pointList[pointId].lng])
+            .addTo(point);
+        map.panTo ([pointList[pointId].lat, pointList[pointId].lng]);
     })
     .on('mouseleave', ".path-table-body-tr",
     function() {
@@ -406,29 +422,40 @@ $("body").on('mouseenter', ".path-table-body-tr",
         var missionPointId = this.id.replace("mission_","");
         L.marker([loadedMission[missionPointId].lat, loadedMission[missionPointId].lon])
             .addTo(missionPoint);
+        map.panTo([loadedMission[missionPointId].lat, loadedMission[missionPointId].lon]    );
     })
     .on('mouseleave', ".path-loaded-table-body-tr",
     function() {
         missionPoint.clearLayers();
+    })
+    .on('mouseenter', ".wall-table-body-tr",
+    function() {
+        var buildingId = this.id.replace("building_","");
+        var building = buildings.features[buildingId];
+        console.log(building);
+        var popupContent = "";
+
+        if (building .properties && building.properties.addrhousenumber && building.properties.addrstreet) {
+            popupContent += "<p>" + building.properties.addrstreet +" " + building.properties.addrhousenumber +"</p>";
+        }
+
+        var position = building.geometry.coordinates[0][0];
+        console.log(position );
+
+        popup.setLatLng([position[1], position[0]])
+             .setContent(popupContent)
+             .openOn(map);
+    })
+    .on('mouseleave', ".wall-table-body-tr",
+    function() {
+        map.closePopup();
     });
-
-function onEachFeature(feature, layer) {
-    var popupContent = "";
-
-    if (feature.properties && feature.properties.addrhousenumber && feature.properties.addrstreet) {
-        popupContent += "<p>" + feature.properties.addrstreet +"</p>";
-        popupContent += "<p>" + feature.properties.addrhousenumber +"</p>";
-    }
-
-    layer.bindPopup(popupContent);
-}
 
 Number.prototype.toRad = function() {
     return this * Math.PI / 180;
 };
 
-function dist2(v, w)
-{
+function dist2(v, w){
     var R = 6371;
     var x1 = v.x-w.x;
     var dLat = x1.toRad();
