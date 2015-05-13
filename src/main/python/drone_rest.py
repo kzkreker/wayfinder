@@ -93,19 +93,7 @@ class Drone(object):
 
     def change_mode(self, mode):
         self._log("Mode: {0}".format(mode))
-
         self.vehicle.mode = VehicleMode(mode)
-        self.vehicle.flush()
-
-    def goto(self, location, relative=None):
-        frame = mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT
-        self.vehicle.commands.clear();
-	self.vehicle.commands.add(Command(1,0,0,0,16,1,1,0,5,0,0,59.903367, 30.328175,0))
-        self.vehicle.commands.add(Command(1,0,1,3,16,0,1,0,5,0,0,59.903367, 30.328175,10))
-        self.vehicle.commands.add(Command(1,0,2,3,16,0,1,0,5,0,0,59.904633, 30.326589,20))
-        self.vehicle.commands.add(Command(1,0,3,3,16,0,1,0,5,0,0,59.903857, 30.318943,30))
-        self.vehicle.commands.add(Command(1,0,4,3,16,0,1,0,5,0,0,59.902518, 30.318978,30))
-        self.change_mode('AUTO')
         self.vehicle.flush()
 
     def gotomission(self, path):
@@ -127,6 +115,15 @@ class Drone(object):
         self.change_mode('AUTO')
         self.vehicle.flush()
         self.vehicle.commands.next =0
+        self.vehicle.flush()
+
+    def clearmission(self):
+        self.change_mode('RTL')
+        time.sleep(2)
+        self.vehicle.commands.clear()
+        self.vehicle.flush()
+        time.sleep(2)
+        self.vehicle.commands.next = 0
         self.vehicle.flush()
 
     def get_mission(self):
@@ -300,7 +297,22 @@ class DroneDelivery(object):
         if(lat is not None and lon is not None):
             self.drone.goto([lat, lon], True)
         return self.templates.track(self.drone.get_location())
-    
+
+    @cherrypy.expose
+    def clearmission(self):
+	self.drone.clearmission()
+        return "clear" 
+  
+    @cherrypy.expose
+    def hold(self):
+        self.drone.change_mode("HOLD")
+        return "HOLD" 
+
+    @cherrypy.expose
+    def auto(self):
+        self.drone.change_mode("AUTO")
+        return "AUTO" 
+
     @cherrypy.expose
     @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_in()
@@ -311,9 +323,10 @@ class DroneDelivery(object):
         return data[0]
      
     @cherrypy.expose
-     @cherrypy.config(**{'tools.cors.on': True})
+    @cherrypy.config(**{'tools.cors.on': True})
     @cherrypy.tools.json_out()
     def get_mission(self):
          return self.drone.get_mission()
+
 Drone([32.5738, -117.0068])
 cherrypy.engine.block()
